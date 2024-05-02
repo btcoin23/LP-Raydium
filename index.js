@@ -1,5 +1,5 @@
 function bot(){
-//    console.log('bot is running');
+    console.log('bot is running');
 }
 
 bot();
