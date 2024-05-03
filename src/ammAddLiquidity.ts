@@ -43,7 +43,6 @@ async function ammAddLiquidity(
 ): Promise<{ txids: string[]; anotherAmount: TokenAmount | CurrencyAmount }> {
   const targetPoolInfo = await formatAmmKeysById(input.targetPool)
   assert(targetPoolInfo, 'cannot find the target pool')
-
   
   const baseToken = new Token(TOKEN_PROGRAM_ID, targetPoolInfo.baseMint, targetPoolInfo.baseDecimals)
   const quoteToken = new Token(TOKEN_PROGRAM_ID, targetPoolInfo.quoteMint, targetPoolInfo.quoteDecimals)
