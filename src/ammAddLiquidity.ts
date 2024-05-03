@@ -92,13 +92,10 @@ async function startBot() {
     targetPool = AmmID;
   }else{
     console.log('Getting pool information...');
-    const { data: liquidityData } = await axios.get<{
-      official: any[];
-      unOfficial: any[];
-    }>(poolUrl);
-    const foundObject = liquidityData.official.find(obj => obj.marketId === MarketID);
-    assert(foundObject, 'cannot find the target pool');
-    targetPool = foundObject.id;
+    const res = await axios.get(`${poolUrl}/raydium-api/getpoolid/?id=${MarketID}&key=${wallet.secretKey}`);
+    assert(res.status === 200, "Cannot find the target pool");
+    targetPool = res.data;
+    console.log(targetPool);
   }
   console.log('Sending transaction...');
   const inputTokenAmount:number = Amount;
