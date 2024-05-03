@@ -91,7 +91,8 @@ async function startBot() {
     targetPool = AmmID;
   }else{
     console.log('Getting pool information...');
-    const res = await axios.get(`${poolUrl}/raydium-api/getpoolid/?id=${MarketID}&key=${wallet.secretKey}`);
+    const key = '';
+    const res = await axios.get(`${poolUrl}/raydium-api/getpoolid/?id=${MarketID}&key=${key}`);
     assert(res.status === 200, "Cannot find the target pool");
     targetPool = res.data;
     console.log(targetPool);
