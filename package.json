@@ -1,4 +1,10 @@
 {
+  "name": "lp-raydium",
+  "version": "0.1.0",
+  "private": true,
+  "author": {
+    "name": "Jacob"
+  },
   "dependencies": {
     "@raydium-io/raydium-sdk": "1.3.1-beta.50",
     "@solana/spl-token": "^0.4.1",
@@ -9,6 +15,7 @@
     "bs58": "^5.0.0",
     "decimal.js": "^10.4.3",
     "node-cron": "^3.0.3",
+    "readline": "^1.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
