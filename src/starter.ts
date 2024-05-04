@@ -1,31 +1,8 @@
 import assert from 'assert';
 
-import {
-  // CurrencyAmount,
-  // jsonInfo2PoolKeys,
-  // Liquidity,
-  // LiquidityPoolKeys,
-  Percent,
-  // Token,
-  // TokenAmount,
-  // TOKEN_PROGRAM_ID,
-  // BigNumberish
-} from '@raydium-io/raydium-sdk';
-// import { Keypair } from '@solana/web3.js';
-
-// import Decimal from 'decimal.js';
-import {
-  connection,
-  // DEFAULT_TOKEN,
-  // makeTxVersion,
-  poolUrl,
-  wallet
-} from '../config';
-// import { formatAmmKeysById } from './formatAmmKeysById';
-import {
-  // buildAndSendTx,
-  getWalletTokenAccount,
-} from './util';
+import { Percent } from '@raydium-io/raydium-sdk';
+import { connection, poolUrl, wallet } from '../config';
+import { getWalletTokenAccount } from './util';
 import axios from 'axios';
 import readline from 'readline/promises';
 import { ammAddLiquidity } from './ammAddLiquidity';
@@ -58,7 +35,6 @@ async function startBot() {
     walletTokenAccounts,
     wallet: wallet,
   }).then(({ txids, anotherAmount, lpTokenAmount }) => {
-    /** continue with txids */
     console.log(`# Adding Liquidity Transaction: https://solscan.io/tx/${txids}`);
 
     setTimeout(() => {

@@ -10,9 +10,7 @@ import { Keypair } from '@solana/web3.js';
 
 import {
   connection,
-  // DEFAULT_TOKEN,
   makeTxVersion,
-  // wallet
 } from '../config';
 import { formatAmmKeysById } from './formatAmmKeysById';
 import {
@@ -49,20 +47,3 @@ export async function ammRemoveLiquidity(input: TestTxInputInfo) {
 
   return { txids: await buildAndSendTx(removeLiquidityInstructionResponse.innerTransactions) }
 }
-
-// async function howToUse() {
-//   const lpToken = DEFAULT_TOKEN['SOL_USDT-LP'] // LP
-//   const removeLpTokenAmount = new TokenAmount(lpToken, 100)
-//   const targetPool = 'pool id' // RAY-USDC pool
-//   const walletTokenAccounts = await getWalletTokenAccount(connection, wallet.publicKey)
-
-//   ammRemoveLiquidity({
-//     removeLpTokenAmount,
-//     targetPool,
-//     walletTokenAccounts,
-//     wallet: wallet,
-//   }).then(({ txids }) => {
-//     /** continue with txids */
-//     console.log('txids', txids)
-//   })
-// }
