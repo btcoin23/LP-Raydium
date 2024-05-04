@@ -1,7 +1,6 @@
 import assert from 'assert';
 
 import {
-  CurrencyAmount,
   jsonInfo2PoolKeys,
   Liquidity,
   LiquidityPoolKeys,
@@ -23,6 +22,7 @@ import {
   buildAndSendTx,
   getWalletTokenAccount,
 } from './util';
+import BN from 'bn.js';
 
 type WalletTokenAccounts = Awaited<ReturnType<typeof getWalletTokenAccount>>
 type TestTxInputInfo = {
@@ -35,18 +35,19 @@ type TestTxInputInfo = {
 
 export async function ammAddLiquidity(
   input: TestTxInputInfo
-): Promise<{ txids: string[]; lpTokenAmount: TokenAmount }> {
+): Promise<{ txids: string[]; lpToken: Token; liquidity: BN }> {
   const targetPoolInfo = await formatAmmKeysById(input.targetPool)
   assert(targetPoolInfo, 'cannot find the target pool')
   
   const baseToken = new Token(TOKEN_PROGRAM_ID, targetPoolInfo.baseMint, targetPoolInfo.baseDecimals)
   const quoteToken = new Token(TOKEN_PROGRAM_ID, targetPoolInfo.quoteMint, targetPoolInfo.quoteDecimals)
+  const lpToken = new Token(TOKEN_PROGRAM_ID, targetPoolInfo.lpMint, targetPoolInfo.lpDecimals);
   const baseAmount: BigNumberish = input.inputTokenAmount * (10 ** targetPoolInfo.baseDecimals);
   const baseTokenAmount = new TokenAmount(baseToken, baseAmount);
   // -------- step 1: compute another amount --------
   const poolKeys = jsonInfo2PoolKeys(targetPoolInfo) as LiquidityPoolKeys
   const extraPoolInfo = await Liquidity.fetchInfo({ connection, poolKeys })
-  const { maxAnotherAmount, anotherAmount, liquidity } = Liquidity.computeAnotherAmount({
+  const { maxAnotherAmount, liquidity } = Liquidity.computeAnotherAmount({
     poolKeys,
     poolInfo: { ...targetPoolInfo, ...extraPoolInfo },
     amount: baseTokenAmount,
@@ -58,8 +59,6 @@ export async function ammAddLiquidity(
     liquidity: liquidity.toString(),
     liquidityD: new Decimal(liquidity.toString()).div(10 ** extraPoolInfo.lpDecimals),
   })
-  const lpTokenAmount =  new TokenAmount(new Token(TOKEN_PROGRAM_ID, targetPoolInfo.lpMint, extraPoolInfo.lpDecimals), liquidity);
-
   // -------- step 2: make instructions --------
   const addLiquidityInstructionResponse = await Liquidity.makeAddLiquidityInstructionSimple({
     connection,
@@ -75,5 +74,5 @@ export async function ammAddLiquidity(
     makeTxVersion,
   })
 
-  return { txids: await buildAndSendTx(addLiquidityInstructionResponse.innerTransactions), lpTokenAmount }
+  return { txids: await buildAndSendTx(addLiquidityInstructionResponse.innerTransactions), lpToken, liquidity }
 }

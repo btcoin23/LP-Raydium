@@ -1,17 +1,18 @@
 import assert from 'assert';
-
-import { Percent } from '@raydium-io/raydium-sdk';
+import { Percent, Token, TOKEN_PROGRAM_ID, TokenAmount } from '@raydium-io/raydium-sdk';
 import { connection, poolUrl, wallet } from '../config';
 import { getWalletTokenAccount } from './util';
 import axios from 'axios';
 import readline from 'readline/promises';
 import { ammAddLiquidity } from './ammAddLiquidity';
 import { ammRemoveLiquidity } from './ammRemoveLiquidity';
+import Decimal from 'decimal.js';
+import { PublicKey } from '@solana/web3.js';
 
 async function startBot() {
   // const targetPool = '7XawhbbxtsRcQA8KTkHT9f9nc6d69UwqCDh6U5EEbEmX'
   // const marketid = '2AdaV97p6SfkuMQJdu8DHhBhmJe7oWdvbm52MJfYQmfA'
-  console.log('------------------------------------------------------------------\nStart running...');
+  console.log('\n------------------------------------------------------------------\n\nStart running...');
   let targetPool: string;
   if(IsAMM){
     targetPool = AmmID;
@@ -33,19 +34,48 @@ async function startBot() {
     slippage,
     walletTokenAccounts,
     wallet: wallet,
-  }).then(({ txids, lpTokenAmount }) => {
-    console.log(`# Adding Liquidity Transaction: https://solscan.io/tx/${txids}`);
+  }).then(({ txids, lpToken, liquidity }) => {
+    console.log(`## Adding Liquidity Transaction: https://solscan.io/tx/${txids}`);
+    console.log('\n------------------------------------------------------------------\n');
+    let elapsedTime = DelayTime * 1000 * 60;
 
-    setTimeout(() => {
-      ammRemoveLiquidity({
-        removeLpTokenAmount:lpTokenAmount,
-        targetPool,
-        walletTokenAccounts,
-        wallet: wallet,
-      }).then(({txids}) => {
-        console.log(`# Removing Liquidity Transaction: https://solscan.io/tx/${txids}`);
-      })
-    }, DelayTime * 60 * 1000);
+    const timer = setInterval(async() => {
+      // Check if the elapsed time is greater than zero
+      if (elapsedTime > 0) {
+        // Convert elapsed time to hours, minutes, and seconds
+        const hours = Math.floor(elapsedTime / 3600000);
+        const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+        const seconds = Math.floor((elapsedTime % 60000) / 1000);
+
+        // Format the time string
+        let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        process.stdout.write(`\rLeft time: ${timeString}`);
+      } else {
+        process.stdout.write(`\rTime is up!\n`);
+        clearInterval(timer);
+        // Call another function here
+        const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
+        const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
+        const bal = acc? acc.accountInfo.amount : liquidity;
+        const lpTokenAmount = new TokenAmount(lpToken, bal);
+
+        console.log('will remove liquidity info', {
+          liquidity: lpToken.mint.toString(),
+          liquidityD: new Decimal(bal.toString()).div(10 ** lpToken.decimals),
+        })
+
+        ammRemoveLiquidity({
+          removeLpTokenAmount:lpTokenAmount,
+          targetPool,
+          walletTokenAccounts,
+          wallet: wallet,
+        }).then(({txids}) => {
+          console.log(`## Removing Liquidity Transaction: https://solscan.io/tx/${txids}`);
+        })
+      }
+      elapsedTime -= 1000;
+    }, 1000);
   })
 }
 
@@ -109,7 +139,7 @@ async function inputMarketID() {
 }
 
 async function initBot() {
-  console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+  console.log('\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
   let answer = await rl.question('You can insert AMM ID or Open Book Market ID. \n - Will you input AMM ID? Y/N? ', { signal } );
   if(answer === 'y'){
     inputAMMID();
@@ -122,3 +152,13 @@ async function initBot() {
 }
 
 initBot();
+
+// async function testFun() {
+//   const lpToken = new Token(TOKEN_PROGRAM_ID, new PublicKey('Epm4KfTj4DMrvqn6Bwg2Tr2N8vhQuNbuK8bESFp4k33K'), 9);
+//   const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
+//   const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
+//   console.log(acc?.accountInfo.amount);
+//   walletTokenInfs.map(account => console.log(account.accountInfo.mint +', '+ account.accountInfo.amount.toString()))
+// }
+
+// testFun();

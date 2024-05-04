@@ -8,7 +8,7 @@
 this will install the dependencies for running the script
 
 ### Prerequisites
-Modify `config.ts` to fit your configuration
+Modify `config.ts.template` to fit your configuration, and rename it to `config.ts`
 
 - `<YOUR_WALLET_SECRET_KEY>`: replace to your own one
 
