@@ -35,7 +35,7 @@ type TestTxInputInfo = {
 
 export async function ammAddLiquidity(
   input: TestTxInputInfo
-): Promise<{ txids: string[]; anotherAmount: TokenAmount | CurrencyAmount; lpTokenAmount: TokenAmount }> {
+): Promise<{ txids: string[]; lpTokenAmount: TokenAmount }> {
   const targetPoolInfo = await formatAmmKeysById(input.targetPool)
   assert(targetPoolInfo, 'cannot find the target pool')
   
@@ -75,5 +75,5 @@ export async function ammAddLiquidity(
     makeTxVersion,
   })
 
-  return { txids: await buildAndSendTx(addLiquidityInstructionResponse.innerTransactions), anotherAmount, lpTokenAmount }
+  return { txids: await buildAndSendTx(addLiquidityInstructionResponse.innerTransactions), lpTokenAmount }
 }

@@ -17,8 +17,7 @@ async function startBot() {
     targetPool = AmmID;
   }else{
     console.log('Getting pool information...');
-    const key = '';
-    const res = await axios.get(`${poolUrl}/raydium-api/getpoolid/?id=${MarketID}&key=${key}`);
+    const res = await axios.get(`${poolUrl}/raydium-api/getpoolid/?id=${MarketID}`);
     assert(res.status === 200, "Cannot find the target pool");
     targetPool = res.data;
     console.log(targetPool);
@@ -34,7 +33,7 @@ async function startBot() {
     slippage,
     walletTokenAccounts,
     wallet: wallet,
-  }).then(({ txids, anotherAmount, lpTokenAmount }) => {
+  }).then(({ txids, lpTokenAmount }) => {
     console.log(`# Adding Liquidity Transaction: https://solscan.io/tx/${txids}`);
 
     setTimeout(() => {
