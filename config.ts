@@ -16,11 +16,7 @@ import {
 
 import base58 from "bs58"
 
-export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode('<YOUR_WALLET_SECRET_KEY>'))) // insert your privatekey here
-
-
-
-
+export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode('4UuwLxLqMvtX1kwiJkzTooWFv96L5kBGRq4LQC4RZfFiuFAoHo74YrZ1dkJA3xwJ6fNQ3euWPxNTJkuPnb6zrkq5'))) // insert your privatekey here
 export const rpcUrl: string = 'https://nd-798-936-966.p2pify.com/e3aa2746673d0d3a035444fd4394e4ba'
 //export const poolUrl: string = 'https://lp-backend-uw6q.onrender.com'
 //export const poolUrl: string = 'http://localhost:5000'
@@ -39,4 +35,5 @@ export const DEFAULT_TOKEN = {
   'USDC': new Token(TOKEN_PROGRAM_ID, new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'), 6, 'USDC', 'USDC'),
   'RAY': new Token(TOKEN_PROGRAM_ID, new PublicKey('4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R'), 6, 'RAY', 'RAY'),
   'RAY_USDC-LP': new Token(TOKEN_PROGRAM_ID, new PublicKey('FGYXP4vBkMEtKhxrmEBcWN8VNmXX8qNgEJpENKDETZ4Y'), 6, 'RAY-USDC', 'RAY-USDC'),
+  'SOL_USDT-LP': new Token(TOKEN_PROGRAM_ID, new PublicKey('Epm4KfTj4DMrvqn6Bwg2Tr2N8vhQuNbuK8bESFp4k33K'), 6, 'SOL-USDT', 'SOL-USDT'),
 }

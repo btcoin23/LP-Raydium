@@ -10,9 +10,9 @@ import { Keypair } from '@solana/web3.js';
 
 import {
   connection,
-  DEFAULT_TOKEN,
+  // DEFAULT_TOKEN,
   makeTxVersion,
-  wallet
+  // wallet
 } from '../config';
 import { formatAmmKeysById } from './formatAmmKeysById';
 import {
@@ -28,7 +28,7 @@ type TestTxInputInfo = {
   wallet: Keypair
 }
 
-async function ammRemoveLiquidity(input: TestTxInputInfo) {
+export async function ammRemoveLiquidity(input: TestTxInputInfo) {
   // -------- pre-action: fetch basic info --------
   const targetPoolInfo = await formatAmmKeysById(input.targetPool)
   assert(targetPoolInfo, 'cannot find the target pool')
@@ -50,19 +50,19 @@ async function ammRemoveLiquidity(input: TestTxInputInfo) {
   return { txids: await buildAndSendTx(removeLiquidityInstructionResponse.innerTransactions) }
 }
 
-async function howToUse() {
-  const lpToken = DEFAULT_TOKEN['RAY_USDC-LP'] // LP
-  const removeLpTokenAmount = new TokenAmount(lpToken, 100)
-  const targetPool = 'pool id' // RAY-USDC pool
-  const walletTokenAccounts = await getWalletTokenAccount(connection, wallet.publicKey)
+// async function howToUse() {
+//   const lpToken = DEFAULT_TOKEN['SOL_USDT-LP'] // LP
+//   const removeLpTokenAmount = new TokenAmount(lpToken, 100)
+//   const targetPool = 'pool id' // RAY-USDC pool
+//   const walletTokenAccounts = await getWalletTokenAccount(connection, wallet.publicKey)
 
-  ammRemoveLiquidity({
-    removeLpTokenAmount,
-    targetPool,
-    walletTokenAccounts,
-    wallet: wallet,
-  }).then(({ txids }) => {
-    /** continue with txids */
-    console.log('txids', txids)
-  })
-}
+//   ammRemoveLiquidity({
+//     removeLpTokenAmount,
+//     targetPool,
+//     walletTokenAccounts,
+//     wallet: wallet,
+//   }).then(({ txids }) => {
+//     /** continue with txids */
+//     console.log('txids', txids)
+//   })
+// }

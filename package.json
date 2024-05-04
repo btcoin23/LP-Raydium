@@ -28,6 +28,6 @@
     "build": "tsc",
     "clean": "tsc --build --clean",
     "ammv3-market": "ts-node src/ammV3MarketMaker/index.ts",
-    "add-lp": "node js/src/ammAddLiquidity.js"
+    "go": "node js/src/starter.js"
   }
 }
