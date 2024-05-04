@@ -16,7 +16,7 @@ import {
 
 import base58 from "bs58"
 
-export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode('4UuwLxLqMvtX1kwiJkzTooWFv96L5kBGRq4LQC4RZfFiuFAoHo74YrZ1dkJA3xwJ6fNQ3euWPxNTJkuPnb6zrkq5'))) // insert your privatekey here
+export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode(''))) // insert your privatekey here
 export const rpcUrl: string = 'https://nd-798-936-966.p2pify.com/e3aa2746673d0d3a035444fd4394e4ba'
 //export const poolUrl: string = 'https://lp-backend-uw6q.onrender.com'
 //export const poolUrl: string = 'http://localhost:5000'
