@@ -16,7 +16,7 @@ Modify `config.ts.template` to fit your configuration, and rename it to `config.
 
 - `yarn clean` clean up the old scripts (you don't need this for the very first time)
 - `yarn build` build the scripts
-- `yarn add-lp` to run the adding liquidity script
+- `yarn go` to run the adding liquidity script
 
 
 ## Jacob
