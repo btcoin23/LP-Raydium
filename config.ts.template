@@ -18,9 +18,7 @@ import base58 from "bs58"
 
 export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode('<YOUR_WALLET_SECRET_KEY>'))) // insert your privatekey here
 export const rpcUrl: string = 'https://nd-798-936-966.p2pify.com/e3aa2746673d0d3a035444fd4394e4ba'
-//export const poolUrl: string = 'https://lp-backend-uw6q.onrender.com'
-//export const poolUrl: string = 'http://localhost:5000'
-export const poolUrl: string = 'http://94.130.53.37:5000'
+export const pairUrl = 'https://api.raydium.io/v2/main/pairs'
 export const rpcToken: string | undefined = undefined
 export const connection = new Connection(rpcUrl);
 export const PROGRAMIDS = MAINNET_PROGRAM_ID;

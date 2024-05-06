@@ -1,27 +1,25 @@
 import assert from 'assert';
-import { Percent, Token, TOKEN_PROGRAM_ID, TokenAmount } from '@raydium-io/raydium-sdk';
-import { connection, poolUrl, wallet } from '../config';
+import { Percent, TokenAmount } from '@raydium-io/raydium-sdk';
+import { connection, pairUrl, wallet } from '../config';
 import { getWalletTokenAccount } from './util';
-import axios from 'axios';
 import readline from 'readline/promises';
 import { ammAddLiquidity } from './ammAddLiquidity';
 import { ammRemoveLiquidity } from './ammRemoveLiquidity';
 import Decimal from 'decimal.js';
-import { PublicKey } from '@solana/web3.js';
 
 async function startBot() {
-  // const targetPool = '7XawhbbxtsRcQA8KTkHT9f9nc6d69UwqCDh6U5EEbEmX'
-  // const marketid = '2AdaV97p6SfkuMQJdu8DHhBhmJe7oWdvbm52MJfYQmfA'
+
   console.log('\n------------------------------------------------------------------\n\nStart running...');
   let targetPool: string;
   if(IsAMM){
     targetPool = AmmID;
   }else{
     console.log('Getting pool information...');
-    const res = await axios.get(`${poolUrl}/raydium-api/getpoolid/?id=${MarketID}`);
+    const res = await fetch(pairUrl);
     assert(res.status === 200, "Cannot find the target pool");
-    targetPool = res.data;
-    console.log(targetPool);
+    const data = await res.json();
+    targetPool = data.find((obj: any) => obj.market === MarketID).ammId;
+    console.log(`AMM ID is ${targetPool}`);
   }
   console.log('Sending transaction...');
   const inputTokenAmount:number = Amount;
@@ -150,7 +148,8 @@ async function initBot() {
     initBot();
   }
 }
-
+  // const targetPool = '7XawhbbxtsRcQA8KTkHT9f9nc6d69UwqCDh6U5EEbEmX'
+  // const marketid = '2AdaV97p6SfkuMQJdu8DHhBhmJe7oWdvbm52MJfYQmfA'
 initBot();
 
 // async function testFun() {
