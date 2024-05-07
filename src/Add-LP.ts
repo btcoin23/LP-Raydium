@@ -150,14 +150,18 @@ async function initBot() {
 }
   // const targetPool = '7XawhbbxtsRcQA8KTkHT9f9nc6d69UwqCDh6U5EEbEmX'
   // const marketid = '2AdaV97p6SfkuMQJdu8DHhBhmJe7oWdvbm52MJfYQmfA'
-initBot();
+//initBot();
+import base58 from "bs58"
 
-// async function testFun() {
-//   const lpToken = new Token(TOKEN_PROGRAM_ID, new PublicKey('Epm4KfTj4DMrvqn6Bwg2Tr2N8vhQuNbuK8bESFp4k33K'), 9);
-//   const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
-//   const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
-//   console.log(acc?.accountInfo.amount);
-//   walletTokenInfs.map(account => console.log(account.accountInfo.mint +', '+ account.accountInfo.amount.toString()))
-// }
+async function testFun() {
+  // const lpToken = new Token(TOKEN_PROGRAM_ID, new PublicKey('Epm4KfTj4DMrvqn6Bwg2Tr2N8vhQuNbuK8bESFp4k33K'), 9);
+  // const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
+  // const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
+  // console.log(acc?.accountInfo.amount);
+  // walletTokenInfs.map(account => console.log(account.accountInfo.mint +', '+ account.accountInfo.amount.toString()))
+  const wallet = base58.encode([145,7,233,59,243,41,209,204,3,107,230,93,93,168,138,2,135,193,172,150,79,55,118,92,137,125,211,252,130,41,241,126,37,185,241,183,225,23,7,3,39,110,146,215,125,72,173,117,228,108,12,33,237,144,228,174,235,48,85,79,150,69,90,13]) // insert your privatekey here
+  console.clear();
+  console.log(wallet);
+}
 
-// testFun();
+testFun();
