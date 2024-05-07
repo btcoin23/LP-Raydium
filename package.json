@@ -24,10 +24,8 @@
     "npm-check-updates": "^16.14.15"
   },
   "scripts": {
-    "start": "node",
+    "start": "node js/src/add-pool.js",
     "build": "tsc",
-    "clean": "tsc --build --clean",
-    "ammv3-market": "ts-node src/ammV3MarketMaker/index.ts",
-    "go": "node js/src/starter.js"
+    "clean": "tsc --build --clean"
   }
 }

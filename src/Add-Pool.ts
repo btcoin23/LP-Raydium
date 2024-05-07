@@ -1,10 +1,12 @@
 import assert from 'assert';
-import { MARKET_STATE_LAYOUT_V3, SPL_MINT_LAYOUT, Token, TOKEN_PROGRAM_ID } from '@raydium-io/raydium-sdk';
+import { MARKET_STATE_LAYOUT_V3, SPL_MINT_LAYOUT, Token, TokenAmount, TOKEN_PROGRAM_ID } from '@raydium-io/raydium-sdk';
 import { connection, wallet } from '../config';
 import { getWalletTokenAccount } from './util';
 import readline from 'readline/promises';
 import { ammCreatePool, calcMarketStartPrice, getMarketAssociatedPoolKeys } from './ammCreatePool';
+import { ammRemoveLiquidity } from './ammRemoveLiquidity';
 import { PublicKey } from '@solana/web3.js';
+import Decimal from 'decimal.js';
 import { BN } from 'bn.js';
 
 const ZERO = new BN(0)
@@ -15,11 +17,11 @@ async function startBot() {
   console.log('\n------------------------------------------------------------------\n\nStart running...');
 
   const marketBufferInfo = await connection.getAccountInfo(new PublicKey(MarketID))
-  assert(marketBufferInfo?.data, `can't find market ${MarketID}`)
+  assert(marketBufferInfo?.data, `Can't find market ${MarketID}`)
   const { baseMint, quoteMint, baseLotSize, quoteLotSize } = MARKET_STATE_LAYOUT_V3.decode(marketBufferInfo.data)
 
-  console.log('Base Token Address-->', baseMint.toString())
-  console.log('Quote Token Address-->', quoteMint.toString())
+  console.log(' - Base Token Address: ', baseMint.toString())
+  console.log(' - Quote Token Address: ', quoteMint.toString())
 
   const baseTokenInfo = await connection.getAccountInfo(baseMint)
   assert(baseTokenInfo?.data, `Can't find base token ${baseMint.toString()}`)
@@ -43,7 +45,7 @@ async function startBot() {
 
   /* do something with start price if needed */
   const startPrice = calcMarketStartPrice({ addBaseAmount, addQuoteAmount })
-  console.log('StartPrice-->', startPrice.toString())
+  console.log(' - StartPrice: ', startPrice.toString())
 
   /* do something with market associated pool keys if needed */
   const associatedPoolKeys = getMarketAssociatedPoolKeys({
@@ -51,6 +53,10 @@ async function startBot() {
     quoteToken,
     targetMarketId,
   })
+
+  const lpToken = new Token(TOKEN_PROGRAM_ID, associatedPoolKeys.lpMint, associatedPoolKeys.lpDecimals);
+  const targetPool = associatedPoolKeys.id.toString();
+  console.log(` - New LP token: ${associatedPoolKeys.lpMint} (Decimal: ${associatedPoolKeys.lpDecimals}, AMM Id: ${associatedPoolKeys.id})`)
 
   ammCreatePool({
     startTime,
@@ -65,6 +71,48 @@ async function startBot() {
     /** continue with txids */
     console.log(`## Creating and initializing new pool: transaction: https://solscan.io/tx/${txids}`);
     console.log('\n------------------------------------------------------------------\n');
+
+    let elapsedTime = DelayTime * 1000 * 60;
+
+    const timer = setInterval(async() => {
+      // Check if the elapsed time is greater than zero
+      if (elapsedTime > 0) {
+        // Convert elapsed time to hours, minutes, and seconds
+        const hours = Math.floor(elapsedTime / 3600000);
+        const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+        const seconds = Math.floor((elapsedTime % 60000) / 1000);
+
+        // Format the time string
+        let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        process.stdout.write(`\r - Left time: ${timeString}`);
+      } else {
+        process.stdout.write(`\rTime is up!\n`);
+        clearInterval(timer);
+        // Call another function here
+        const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
+        const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
+        assert(acc, "Can't find LP token balance");
+        const bal = acc.accountInfo.amount;
+        const lpTokenAmount = new TokenAmount(lpToken, bal);
+
+        console.log('Will remove liquidity info', {
+          liquidity: lpToken.mint.toString(),
+          liquidityD: new Decimal(bal.toString()).div(10 ** lpToken.decimals),
+        })
+
+        ammRemoveLiquidity({
+          removeLpTokenAmount:lpTokenAmount,
+          targetPool,
+          walletTokenAccounts,
+          wallet: wallet,
+        }).then(({txids}) => {
+          console.log(`## Removing Liquidity Transaction: https://solscan.io/tx/${txids}`);
+        })
+
+      }
+      elapsedTime -= 1000;
+    }, 1000);
   })
 }
 
@@ -129,32 +177,3 @@ async function inputMarketID() {
 }
 
 inputMarketID()
-
-// async function initBot() {
-//   console.log('\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
-//   let answer = await rl.question('You can insert AMM ID or Open Book Market ID. \n - Will you input AMM ID? Y/N? ', { signal } );
-//   if(answer === 'y'){
-//     inputAMMID();
-//   }else if(answer === 'n'){
-//     inputMarketID();
-//   }
-//   else {
-//     initBot();
-//   }
-// }
-// const targetPool = '7XawhbbxtsRcQA8KTkHT9f9nc6d69UwqCDh6U5EEbEmX'
-// const marketid = '2AdaV97p6SfkuMQJdu8DHhBhmJe7oWdvbm52MJfYQmfA'
-//initBot();
-
-// async function testFun() {
-//   // const lpToken = new Token(TOKEN_PROGRAM_ID, new PublicKey('Epm4KfTj4DMrvqn6Bwg2Tr2N8vhQuNbuK8bESFp4k33K'), 9);
-//   // const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
-//   // const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
-//   // console.log(acc?.accountInfo.amount);
-//   // walletTokenInfs.map(account => console.log(account.accountInfo.mint +', '+ account.accountInfo.amount.toString()))
-//   const wallet = base58.encode([145,7,233,59,243,41,209,204,3,107,230,93,93,168,138,2,135,193,172,150,79,55,118,92,137,125,211,252,130,41,241,126,37,185,241,183,225,23,7,3,39,110,146,215,125,72,173,117,228,108,12,33,237,144,228,174,235,48,85,79,150,69,90,13]) // insert your privatekey here
-//   console.clear();
-//   console.log(wallet);
-// }
-
-// testFun();
