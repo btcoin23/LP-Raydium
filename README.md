@@ -1,5 +1,4 @@
-# Liquidity Provide With Raydium SDK
-
+# Creating new pool and removing LP with Open Book Market Id on Raydium
 ## Getting Started
 ### Installation
 
@@ -19,4 +18,4 @@ Modify `config.ts.template` to fit your configuration, and rename it to `config.
 - `yarn start` to run the creating new pool and removeing Lp script
 
 
-## Jacob
+## Jacob 2024/05/07
