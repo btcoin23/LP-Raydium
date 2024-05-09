@@ -74,14 +74,13 @@ async function startBot() {
 
     let elapsedTime = DelayTime * 1000 * 60;
 
-    const timer = setInterval(async() => {
+    const timer = setInterval(async () => {
       // Check if the elapsed time is greater than zero
       if (elapsedTime > 0) {
         // Convert elapsed time to hours, minutes, and seconds
         const hours = Math.floor(elapsedTime / 3600000);
         const minutes = Math.floor((elapsedTime % 3600000) / 60000);
         const seconds = Math.floor((elapsedTime % 60000) / 1000);
-
         // Format the time string
         let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
@@ -102,11 +101,11 @@ async function startBot() {
         })
 
         ammRemoveLiquidity({
-          removeLpTokenAmount:lpTokenAmount,
+          removeLpTokenAmount: lpTokenAmount,
           targetPool,
           walletTokenAccounts,
           wallet: wallet,
-        }).then(({txids}) => {
+        }).then(({ txids }) => {
           console.log(`## Removing Liquidity Transaction: https://solscan.io/tx/${txids}`);
         })
 
@@ -168,7 +167,6 @@ async function inputMarketID() {
   const answer = await rl.question(' - Open Book Market ID: ', { signal });
   if (answer.toString().length === 44) {
     MarketID = answer;
-    //checkMarketId(MarketID);
     inputBaseAmount();
   } else {
     console.log("Not correct Open Book Market ID. Try again!")
