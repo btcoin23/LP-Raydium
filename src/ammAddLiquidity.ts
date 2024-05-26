@@ -16,7 +16,7 @@ import Decimal from 'decimal.js';
 import {
   connection,
   makeTxVersion
-} from '../config';
+} from './config';
 import { formatAmmKeysById } from './formatAmmKeysById';
 import {
   buildAndSendTx,

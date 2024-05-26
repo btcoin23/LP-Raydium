@@ -1,21 +1,37 @@
-# Creating new pool and removing LP with Open Book Market Id on Raydium
-## Getting Started
-### Installation
+# Creating new pool with Open Book MarketID and remove LP according to the configuration
 
-`yarn install`
+## Features
 
-this will install the dependencies for running the script
+- Create new pool with Open Book MarketID
+- Remove LP according to the configuration
 
-### Prerequisites
-Modify `config.ts.template` to fit your configuration, and rename it to `config.ts`
+## Prerequisites
 
-- `<YOUR_WALLET_SECRET_KEY>`: replace to your own one
+Before you begin, ensure you have met the following requirements:
 
-### Usage
+- Node.js installed (v18 or above recommended)
+- Yarn
+- A Solana wallet with some SOL for testing the swap
 
-- `yarn clean` clean up the old scripts (you don't need this for the very first time)
-- `yarn build` build the scripts
-- `yarn start` to run the creating new pool and removeing Lp script
+## Configurations
 
+Create a new `.env` file and add your Private key, Rpc URL
 
-## Srdev23 2024/05/07
+`.env` file
+```
+
+WALLET_PRIVATE_KEY='AaTc...'
+RPC_URL='https://mainnet.helius-rpc.com/?api-key=862a...'
+
+```
+
+Then run
+
+```sh
+yarn clean
+
+yarn build
+
+yarn start
+```
+## Version 1.0,   26/5/2024
