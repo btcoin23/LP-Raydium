@@ -16,7 +16,7 @@ import {
   makeTxVersion,
   PROGRAMIDS,
   wallet,
-} from '../config';
+} from './config';
 import {
   buildAndSendTx,
   getWalletTokenAccount,

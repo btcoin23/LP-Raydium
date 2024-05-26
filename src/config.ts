@@ -3,7 +3,6 @@ import {
   Currency,
   LOOKUP_TABLE_CACHE,
   MAINNET_PROGRAM_ID,
-  DEVNET_PROGRAM_ID,
   RAYDIUM_MAINNET,
   Token,
   TOKEN_PROGRAM_ID,
@@ -14,24 +13,20 @@ import {
   Keypair,
   PublicKey,
 } from '@solana/web3.js';
-
+import 'dotenv/config';
 import base58 from "bs58"
 
-export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode('<YOUR_WALLET_SECRET_KEY>'))) // insert your privatekey here
-
-export const rpcUrl: string = 'https://nd-798-936-966.p2pify.com/e3aa2746673d0d3a035444fd4394e4ba'
-//export const devRpcUrl: string = 'https://nd-464-198-228.p2pify.com/8c635ee3e89c618d7d3cb33f0dca57c1'
+const RPC_URL = process.env.RPC_URL;
+const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY;
+export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode(WALLET_PRIVATE_KEY)))
 export const pairUrl = 'https://api.raydium.io/v2/main/pairs'
 export const rpcToken: string | undefined = undefined
-export const connection = new Connection(rpcUrl);
-//export const connection = new Connection(devRpcUrl);
+export const connection = new Connection(RPC_URL)//, {wsEndpoint: WSS_URL});
 export const PROGRAMIDS = MAINNET_PROGRAM_ID;
-//export const PROGRAMIDS = DEVNET_PROGRAM_ID;
 export const ENDPOINT = _ENDPOINT;
 export const RAYDIUM_MAINNET_API = RAYDIUM_MAINNET;
-export const makeTxVersion = TxVersion.V0; // LEGACY
-export const addLookupTableInfo = LOOKUP_TABLE_CACHE // only mainnet. other = undefined
-//export const addLookupTableInfo = undefined
+export const makeTxVersion = TxVersion.V0;
+export const addLookupTableInfo = LOOKUP_TABLE_CACHE
 export const DEFAULT_TOKEN = {
   'SOL': new Currency(9, 'USDC', 'USDC'),
   'WSOL': new Token(TOKEN_PROGRAM_ID, new PublicKey('So11111111111111111111111111111111111111112'), 9, 'WSOL', 'WSOL'),

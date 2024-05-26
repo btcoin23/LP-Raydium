@@ -11,7 +11,7 @@ import { Keypair } from '@solana/web3.js';
 import {
   connection,
   makeTxVersion,
-} from '../config';
+} from './config';
 import { formatAmmKeysById } from './formatAmmKeysById';
 import {
   buildAndSendTx,

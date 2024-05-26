@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { MARKET_STATE_LAYOUT_V3, SPL_MINT_LAYOUT, Token, TokenAmount, TOKEN_PROGRAM_ID } from '@raydium-io/raydium-sdk';
-import { connection, wallet } from '../config';
+import { connection, wallet } from './config';
 import { getWalletTokenAccount } from './util';
 import readline from 'readline/promises';
 import { ammCreatePool, calcMarketStartPrice, getMarketAssociatedPoolKeys } from './ammCreatePool';
@@ -9,8 +9,8 @@ import { PublicKey } from '@solana/web3.js';
 import Decimal from 'decimal.js';
 import { BN } from 'bn.js';
 
-const ZERO = new BN(0)
-type BN = typeof ZERO
+// const ZERO = new BN(1000_000_000_000)
+// type BN = typeof ZERO
 
 async function startBot() {
 
@@ -37,15 +37,17 @@ async function startBot() {
   const baseToken = new Token(TOKEN_PROGRAM_ID, baseMint, baseMintInfo.decimals)
   const quoteToken = new Token(TOKEN_PROGRAM_ID, quoteMint, quoteMintInfo.decimals)
   const targetMarketId = new PublicKey(MarketID)
-  const addBaseAmount = new BN(BaseAmount * (10 ** baseMintInfo.decimals))
-  const addQuoteAmount = new BN(QuoteAmount * (10 ** quoteMintInfo.decimals))
+  const amount1 = BaseAmount * (10 ** baseMintInfo.decimals)
+  const amount2 = QuoteAmount * (10 ** quoteMintInfo.decimals)
+  const addBaseAmount = new BN(amount1.toString(), 10)
+  const addQuoteAmount = new BN(amount2.toString(), 10)
   //const startTime = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 // start from 7 days later
   const startTime = Math.floor(Date.now() / 1000) + 60 * 1 // start from 1 min later
   const walletTokenAccounts = await getWalletTokenAccount(connection, wallet.publicKey)
 
   /* do something with start price if needed */
-  const startPrice = calcMarketStartPrice({ addBaseAmount, addQuoteAmount })
-  console.log(' - StartPrice: ', startPrice.toString())
+  // const startPrice = calcMarketStartPrice({ addBaseAmount, addQuoteAmount })
+  console.log(' - StartPrice: ', (QuoteAmount / BaseAmount).toString())
 
   /* do something with market associated pool keys if needed */
   const associatedPoolKeys = getMarketAssociatedPoolKeys({
