@@ -167,7 +167,7 @@ async function inputQuoteAmount() {
 async function inputMarketID() {
   console.log('\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
   const answer = await rl.question(' - Open Book Market ID: ', { signal });
-  if (answer.toString().length === 44) {
+  if (answer.toString().length > 40) {
     MarketID = answer;
     inputBaseAmount();
   } else {
