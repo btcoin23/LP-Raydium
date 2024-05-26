@@ -105,8 +105,8 @@ async function startBot() {
         ammRemoveLiquidity({
           removeLpTokenAmount: lpTokenAmount,
           targetPool,
-          walletTokenAccounts,
-          wallet: wallet,
+          walletTokenAccounts: walletTokenInfs,
+          wallet,
         }).then(({ txids }) => {
           console.log(`## Removing Liquidity Transaction: https://solscan.io/tx/${txids}`);
         })
