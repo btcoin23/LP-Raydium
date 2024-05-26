@@ -9,8 +9,8 @@ import { PublicKey } from '@solana/web3.js';
 import Decimal from 'decimal.js';
 import { BN } from 'bn.js';
 
-// const ZERO = new BN(1000_000_000_000)
-// type BN = typeof ZERO
+const ZERO = new BN(1000_000_000_000)
+type BN = typeof ZERO
 
 async function startBot() {
 
