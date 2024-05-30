@@ -1,16 +1,25 @@
 import assert from 'assert';
 import { MARKET_STATE_LAYOUT_V3, SPL_MINT_LAYOUT, Token, TokenAmount, TOKEN_PROGRAM_ID } from '@raydium-io/raydium-sdk';
 import { connection, wallet } from './config';
-import { getWalletTokenAccount } from './util';
+import { getWalletTokenAccount, checkTxRes } from './util';
 import readline from 'readline/promises';
 import { ammCreatePool, calcMarketStartPrice, getMarketAssociatedPoolKeys } from './ammCreatePool';
 import { ammRemoveLiquidity } from './ammRemoveLiquidity';
+import { SingleBar, Presets } from "cli-progress";
 import { PublicKey } from '@solana/web3.js';
 import Decimal from 'decimal.js';
 import { BN } from 'bn.js';
 
 const ZERO = new BN(1000_000_000_000)
 type BN = typeof ZERO
+
+const opt = {
+  format: "Left time: {percentage}% | ETA: {eta}s | {value}/{total}",
+};
+const progressBar = new SingleBar(
+  opt,
+  Presets.shades_classic
+);
 
 async function startBot() {
 
@@ -60,61 +69,61 @@ async function startBot() {
   const targetPool = associatedPoolKeys.id.toString();
   console.log(` - New LP token: ${associatedPoolKeys.lpMint} (Decimal: ${associatedPoolKeys.lpDecimals}, AMM Id: ${associatedPoolKeys.id})`)
 
-  ammCreatePool({
-    startTime,
-    addBaseAmount,
-    addQuoteAmount,
-    baseToken,
-    quoteToken,
-    targetMarketId,
-    wallet,
-    walletTokenAccounts,
-  }).then(({ txids }) => {
-    /** continue with txids */
-    console.log(`## Creating and initializing new pool: transaction: https://solscan.io/tx/${txids}`);
-    console.log('\n------------------------------------------------------------------\n');
+  let txSuccess: boolean = false;
+  while(!txSuccess){
+    const txinf = await ammCreatePool({
+      startTime,
+      addBaseAmount,
+      addQuoteAmount,
+      baseToken,
+      quoteToken,
+      targetMarketId,
+      wallet,
+      walletTokenAccounts,
+    })
+    txSuccess = await checkTxRes(txinf.txids[0], Date.now())
+    
+    if(txSuccess)console.log(`## Creating and initializing new pool: Tx: https://solscan.io/tx/${txinf.txids[0]}`);
+    else console.log(` - Try sending Tx again to create a new pool`)
+  }
 
-    let elapsedTime = DelayTime * 1000 * 60;
+  let elapsedTime = DelayTime * 60;
+  progressBar.start(elapsedTime, 0);
 
-    const timer = setInterval(async () => {
-      // Check if the elapsed time is greater than zero
-      if (elapsedTime > 0) {
-        // Convert elapsed time to hours, minutes, and seconds
-        const hours = Math.floor(elapsedTime / 3600000);
-        const minutes = Math.floor((elapsedTime % 3600000) / 60000);
-        const seconds = Math.floor((elapsedTime % 60000) / 1000);
-        // Format the time string
-        let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const timer = setInterval(async () => {
+    if (elapsedTime > 0) 
+      progressBar.update(elapsedTime);
+    else {
+      progressBar.stop()
+      clearInterval(timer);
+      const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
+      const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
+      assert(acc, "Can't find LP token balance");
+      const bal = acc.accountInfo.amount;
+      const lpTokenAmount = new TokenAmount(lpToken, bal);
 
-        process.stdout.write(`\r - Left time: ${timeString}`);
-      } else {
-        process.stdout.write(`\rTime is up!\n`);
-        clearInterval(timer);
-        // Call another function here
-        const walletTokenInfs = await getWalletTokenAccount(connection, wallet.publicKey);
-        const acc = walletTokenInfs.find(account => account.accountInfo.mint.toString() === lpToken.mint.toString());
-        assert(acc, "Can't find LP token balance");
-        const bal = acc.accountInfo.amount;
-        const lpTokenAmount = new TokenAmount(lpToken, bal);
+      console.log('Will remove LP info', {
+        liquidity: lpToken.mint.toString(),
+        liquidityD: new Decimal(bal.toString()).div(10 ** lpToken.decimals),
+      })
 
-        console.log('Will remove liquidity info', {
-          liquidity: lpToken.mint.toString(),
-          liquidityD: new Decimal(bal.toString()).div(10 ** lpToken.decimals),
-        })
-
-        ammRemoveLiquidity({
+      txSuccess = false;
+      while(!txSuccess){
+        const txinf = await ammRemoveLiquidity({
           removeLpTokenAmount: lpTokenAmount,
           targetPool,
           walletTokenAccounts: walletTokenInfs,
           wallet,
-        }).then(({ txids }) => {
-          console.log(`## Removing Liquidity Transaction: https://solscan.io/tx/${txids}`);
         })
-
+        txSuccess = await checkTxRes(txinf.txids[0], Date.now())
+    
+        if(txSuccess)console.log(`## Removing LP Tx: https://solscan.io/tx/${txinf.txids[0]}`);
+        else console.log(` - Trying sending Tx again to remove LP`)
       }
-      elapsedTime -= 1000;
-    }, 1000);
-  })
+    }
+    elapsedTime --;
+  }, 1000);
+
 }
 
 const rl = readline.createInterface({

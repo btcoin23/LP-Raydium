@@ -24,6 +24,7 @@ export const rpcToken: string | undefined = undefined
 export const connection = new Connection(RPC_URL)//, {wsEndpoint: WSS_URL});
 export const PROGRAMIDS = MAINNET_PROGRAM_ID;
 export const ENDPOINT = _ENDPOINT;
+export const timeOut = 1000 * 30;
 export const RAYDIUM_MAINNET_API = RAYDIUM_MAINNET;
 export const makeTxVersion = TxVersion.V0;
 export const addLookupTableInfo = LOOKUP_TABLE_CACHE
