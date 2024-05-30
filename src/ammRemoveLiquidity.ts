@@ -11,6 +11,7 @@ import { Keypair } from '@solana/web3.js';
 import {
   connection,
   makeTxVersion,
+  maxLamports
 } from './config';
 import { formatAmmKeysById } from './formatAmmKeysById';
 import {
@@ -42,6 +43,9 @@ export async function ammRemoveLiquidity(input: TestTxInputInfo) {
       tokenAccounts: input.walletTokenAccounts,
     },
     amountIn: input.removeLpTokenAmount,
+    computeBudgetConfig: {
+      microLamports: maxLamports,
+    },
     makeTxVersion,
   })
 
