@@ -21,6 +21,7 @@ import {
   connection,
   makeTxVersion,
   wallet,
+  timeOut
 } from './config';
 
 export async function sendTx(
@@ -75,4 +76,25 @@ export function getATAAddress(programId: PublicKey, owner: PublicKey, mint: Publ
 export async function sleepTime(ms: number) {
   console.log((new Date()).toLocaleString(), 'sleepTime', ms)
   return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export async function checkTxRes (sig: string, now: number): Promise<boolean> {
+  const state = await connection.getSignatureStatus(sig, { searchTransactionHistory: true });
+  if (state && state.value) {
+      if (state.value.err) {
+          console.log(` * Transaction failed!`)
+          return false
+      } else {
+          console.log(' * Transaction succeeded!')
+          return true
+      }
+  }
+  else {
+      if ((Date.now() - now) > timeOut) {
+          console.log(' * Transaction timeout!')
+          return false
+      }
+      else
+          return await checkTxRes(sig, now);
+  }
 }
