@@ -18,6 +18,7 @@ import base58 from "bs58"
 
 const RPC_URL = process.env.RPC_URL;
 const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY;
+export const maxLamports = 1000000; //almost 0.001 SOL fee
 export const wallet = Keypair.fromSecretKey(Buffer.from(base58.decode(WALLET_PRIVATE_KEY)))
 export const pairUrl = 'https://api.raydium.io/v2/main/pairs'
 export const rpcToken: string | undefined = undefined

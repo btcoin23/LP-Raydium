@@ -16,6 +16,7 @@ import {
   makeTxVersion,
   PROGRAMIDS,
   wallet,
+  maxLamports
 } from './config';
 import {
   buildAndSendTx,
@@ -84,6 +85,9 @@ export async function ammCreatePool(input: TestTxInputInfo): Promise<{ txids: st
     },
     associatedOnly: false,
     checkCreateATAOwner: true,
+    computeBudgetConfig: {
+      microLamports: maxLamports,
+    },
     makeTxVersion,
     feeDestinationId: new PublicKey('7YttLkHDoNj9wyDur5pM1ejNaAvT9X4eqaYcHQqtj2G5'), // only mainnet use this
   })
