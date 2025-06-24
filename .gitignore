@@ -6,3 +6,4 @@ yarn-error.log*
 build/
 .env
 src/test.ts
+*.zip
